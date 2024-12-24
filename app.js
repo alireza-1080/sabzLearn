@@ -3,6 +3,7 @@ import cors from 'cors';
 import path from 'path';
 import "dotenv/config";
 import authRouter from './routes/auth.js';
+import userRouter from './routes/users.js';
 import { fileURLToPath } from 'url';
 import helmet from 'helmet';
 
@@ -23,6 +24,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/courses/covers", express.static(path.join(__dirname, "courses", "covers")));
 
 app.use('/auth', authRouter);
+app.use('/users', userRouter);
 
 export default app;
 export { __dirname };
