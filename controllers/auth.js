@@ -3,9 +3,16 @@ import userValidator from "../validators/userValidator.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import "dotenv/config";
+import normalizedPhoneNumber from "../utils/normalizePhoneNumber.js";
 
 const register = async (req, res) => {
     try {
+        //^ get request body
+        const requestBody = req.body;
+
+        //^ Normalize the phone number
+        requestBody.phone = normalizedPhoneNumber(requestBody.phone);
+
         //^ Validate the user input
         const { error, value } = userValidator.validate(req.body);
 
