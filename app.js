@@ -1,0 +1,28 @@
+import express from 'express';
+import cors from 'cors';
+import path from 'path';
+import "dotenv/config";
+import authRouter from './routes/auth.js';
+import { fileURLToPath } from 'url';
+import helmet from 'helmet';
+
+//^ Fix for __dirname not being defined in ES6 modules
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+
+console.log(__dirname);
+
+
+
+const app = express();
+
+app.use(helmet());
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use("/courses/covers", express.static(path.join(__dirname, "courses", "covers")));
+
+app.use('/auth', authRouter);
+
+export default app;
+export { __dirname };
