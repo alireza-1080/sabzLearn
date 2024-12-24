@@ -45,6 +45,7 @@ const register = async (req, res) => {
             return res.status(201).json({ message: "User registered successfully", user, accessToken });
         }
     }
+    //^ Catch any error that occurs & return a 500 response
     catch (error) {
         return res.status(500).json({ error: error.message });
     }
