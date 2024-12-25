@@ -4,6 +4,8 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import "dotenv/config";
 import normalizedPhoneNumber from "../utils/normalizePhoneNumber.js";
+import BannedPhone from "../models/bannedPhone.js";
+import BannedEmail from "../models/bannedEmail.js";
 
 const register = async (req, res) => {
     try {
@@ -48,6 +50,9 @@ const register = async (req, res) => {
 
             //^ make sure the email is all lowercase
             value.email = value.email.toLowerCase();
+
+            //^ make sure the username is all lowercase
+            value.username = value.username.toLowerCase();
 
             //^ Create a new user
             const user = new User(value);
