@@ -36,5 +36,55 @@ const banUser = async (req, res) => {
     }
 }
 
+const unbanPhone = async (req, res) => {
+    try {
+        //^ Get the phone number from the request params
+        const { phone } = req.params;
 
-export { banUser };
+        //^ Find the banned phone by phone number
+        const bannedPhone = await BannedPhone.findOne({ phone });
+
+        //^ Return a 404 response if the phone number is not found
+        if (!bannedPhone) {
+            return res.status(404).json({ error: "Phone number not found" });
+        }
+
+        //^ Delete the phone number from the banned phone collection
+        await BannedPhone.findOneAndDelete({ phone });
+
+        //^ Return a 200 response
+        return res.status(200).json({ message: "Phone number unbanned successfully" });
+    }
+    //^ Catch any error that occurs & return a 500 response
+    catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+}
+
+const unbanEmail = async (req, res) => {
+    try {
+        //^ Get the email from the request params
+        const { email } = req.params;
+
+        //^ Find the banned email by email
+        const bannedEmail = await BannedEmail.findOne({ email });
+
+        //^ Return a 404 response if the email is not found
+        if (!bannedEmail) {
+            return res.status(404).json({ error: "Email not found" });
+        }
+
+        //^ Delete the email from the banned email collection
+        await BannedEmail.findOneAndDelete({ email });
+
+        //^ Return a 200 response
+        return res.status(200).json({ message: "Email unbanned successfully" });
+    }
+    //^ Catch any error that occurs & return a 500 response
+    catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+}
+
+
+export { banUser, unbanPhone, unbanEmail };
