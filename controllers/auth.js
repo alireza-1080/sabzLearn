@@ -78,7 +78,53 @@ const register = async (req, res) => {
     }
 };
 
-const login = async (req, res) => { };
+const login = async (req, res) => {
+    try {
+        //^ get rquest body
+        //? identifier can be either email or username or phone
+        let { identifier, password } = req.body;
+
+        //^ make sure the identifier is all lowercase
+        identifier = identifier.toLowerCase();
+
+        //^ Find the user by email or username or phone
+        const user = await User.findOne({
+            $or: [
+                { email: identifier },
+                { username: identifier },
+                { phone: identifier },
+            ],
+        });
+
+        //^ Return a 404 response if the user is not found
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        //^ Compare the password
+        const validPassword = await bcrypt.compare(password, user.password);
+
+        //^ Return a 400 response if the password is invalid
+        if (!validPassword) {
+            return res.status(400).json({ error: "Invalid password" });
+        }
+
+        //^ Generate an access token
+        const accessToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+            expiresIn: "30d",
+        });
+
+        //^ Remove password from the response & return the user object
+        delete user._doc.password;
+
+        //^ Return the user object & access token
+        return res.status(200).json({ message: "Login successful", user, accessToken });
+    }
+    //^ Catch any error that occurs & return a 500 response
+    catch (error) {
+        return res.status(500).json({ error: error });
+    };
+}
 
 const getMe = async (req, res) => { };
 
