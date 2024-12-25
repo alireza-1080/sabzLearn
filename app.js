@@ -6,6 +6,7 @@ import authRouter from './routes/auth.js';
 import userRouter from './routes/users.js';
 import { fileURLToPath } from 'url';
 import helmet from 'helmet';
+import jwt from 'jsonwebtoken';
 
 //^ Fix for __dirname not being defined in ES6 modules
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
