@@ -3,10 +3,10 @@ import mongoose from "mongoose";
 const bannedEmailSchema = new mongoose.Schema({
     email: {
         type: String,
-        required: true,
+        required: [true, "Email is a required field"],
         trim: true,
-        unique: true,
-        lowercase: true
+        unique: [true, "Email already exists"],
+        lowercase: [true, "Email must be in lowercase"],
     }
 });
 

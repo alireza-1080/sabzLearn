@@ -34,6 +34,9 @@ const register = async (req, res) => {
                 value.role = "ADMIN";
             }
 
+            //^ make sure the email is all lowercase
+            value.email = value.email.toLowerCase();
+
             //^ Create a new user
             const user = new User(value);
 

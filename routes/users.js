@@ -1,10 +1,10 @@
 import express from 'express';
-import User from '../models/user.js';
+import { banUser } from '../controllers/users.js';
 
 const router = express.Router();
 
-router.post("/ban/:id", async (req, res) => {});
+router.post("/ban/:id", banUser);
 
-router.post("/unban/:id", async (req, res) => {});
+router.post("/unban-phone/:id", async (req, res) => {});
 
 export default router;
