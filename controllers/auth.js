@@ -28,6 +28,18 @@ const register = async (req, res) => {
             const hashedPassword = await bcrypt.hash(value.password, 10);
             value.password = hashedPassword;
 
+            //^ Refuse to register a user with a banned phone number
+            const bannedPhone = await BannedPhone.findOne({ phone: value.phone });
+            if (bannedPhone) {
+                return res.status(400).json({ error: "Phone number is banned" });
+            }
+
+            //^ Refuse to register a user with a banned email
+            const bannedEmail = await BannedEmail.findOne({ email: value.email });
+            if (bannedEmail) {
+                return res.status(400).json({ error: "Email is banned" });
+            }
+
             //^ Check if the user is the first user to be registered
             const userCount = await User.countDocuments()
             if (userCount === 0) {
