@@ -1,5 +1,3 @@
-
-
 const isTokenReceived = (req, res, next) => {
     //^ Get the access token from the request headers
     const accessToken = req.header("Authorization").split(" ")[1];
