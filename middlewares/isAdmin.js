@@ -8,7 +8,7 @@ const isAdmin = async (req, res, next) => {
     const user = await User.findById(userId);
 
     //^ Return a 403 response if the user is not an admin
-    if (user.role !== "admin") {
+    if (user.role !== "ADMIN") {
         return res.status(403).json({ error: "Unauthorized user" });
     }
 
