@@ -3,8 +3,17 @@ import { login, register, getMe } from '../controllers/auth.js'; // Ensure this 
 
 const router = express.Router();
 
-router.post('/register', register);
-router.post('/login', login);
-router.get('/me', getMe);
+router
+    .route('/register')
+    .post(register);
+
+router
+    .route('/login')
+    .post(login);
+
+router
+    .route('/me')
+    .get(getMe);
+
 
 export default router;

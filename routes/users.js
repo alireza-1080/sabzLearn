@@ -1,5 +1,5 @@
 import express from 'express';
-import { banUser, unbanEmail, unbanPhone, getAllUsers, removeUserById } from '../controllers/users.js';
+import { banUser, unbanEmail, unbanPhone, getAllUsers, removeUserById, changeRole } from '../controllers/users.js';
 import isAdmin from '../middlewares/isAdmin.js';
 import isTokenValid from '../middlewares/isTokenValid.js';
 import isTokenReceived from '../middlewares/isTokenReceived.js';
@@ -30,5 +30,9 @@ router
 router
     .route("/:id")
     .delete(isIdValid, removeUserById);
+
+router
+    .route("/role/:id")
+    .put(isIdValid, changeRole);
 
 export default router;

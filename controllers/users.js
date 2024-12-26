@@ -1,12 +1,11 @@
 import BannedPhone from "../models/bannedPhone.js";
 import User from "../models/user.js";
 import BannedEmail from "../models/bannedEmail.js";
-import mongoose from "mongoose";
 
 const banUser = async (req, res) => {
     try {
         //^ Get the user id from request object
-        const { id } = req.params;
+        const id = req.userId;
 
         //^ Find the user by id
         const user = await User.findById(id);
@@ -98,7 +97,7 @@ const getAllUsers = async (req, res) => {
 const removeUserById = async (req, res) => {
     try {
         //^ Get the user id from the request object
-        const { id } = req.params;
+        const id = req.userId;
 
         //^ Find the user by id
         const user = await User.findById(id);
@@ -121,5 +120,33 @@ const removeUserById = async (req, res) => {
     }
 }
 
+const changeRole = async (req, res) => {
+    try {
+        //^ Get the user id from the request object
+        const id = req.userId;
+        console.log(id);
 
-export { banUser, unbanPhone, unbanEmail, getAllUsers, removeUserById };
+        //^ Find the user by id
+        const user = await User.findById(id);
+
+        //^ Return a 404 response if the user is not found
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        //^ Change the user's role to the new role
+        user.role = user.role === "USER" ? "ADMIN" : "USER";
+
+        //^ Save the user to the database
+        await user.save();
+
+        //^ Return a 200 response
+        return res.status(200).json({ message: "User role changed successfully" });
+    }
+    //^ Catch any error that occurs & return a 500 response
+    catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+}
+
+export { banUser, unbanPhone, unbanEmail, getAllUsers, removeUserById, changeRole };
