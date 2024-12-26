@@ -8,7 +8,7 @@ const isIdValid = (req, res, next) => {
     const isIdValid = mongoose.Types.ObjectId.isValid(id);
 
     //^ Return a 400 response if the user id is not valid
-    if (!isIdValid) { return res.status(400).json({ error: "Invalid user id" }); }
+    if (!isIdValid) { return res.status(400).json({ error: "Invalid id" }); }
 
     //^ Add the user id to the request object
     req.userId = id;

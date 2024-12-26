@@ -6,6 +6,7 @@ import authRouter from './routes/auth.js';
 import userRouter from './routes/users.js';
 import { fileURLToPath } from 'url';
 import helmet from 'helmet';
+import categoryRouter from './routes/categories.js';
 
 //^ Fix for __dirname not being defined in ES6 modules
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -25,6 +26,7 @@ app.use("/courses/covers", express.static(path.join(__dirname, "courses", "cover
 
 app.use('/auth', authRouter);
 app.use('/users', userRouter);
+app.use('/categories', categoryRouter);
 
 export default app;
 export { __dirname };
