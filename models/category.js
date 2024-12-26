@@ -11,7 +11,10 @@ const categorySchema = new mongoose.Schema({
         required: [true, "Category title is required"],
         unique: [true, "Category title must be unique"],
     },
-});
+},
+    {
+        timestamps: true
+    });
 
 const Category = mongoose.model("Category", categorySchema);
 
