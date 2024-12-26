@@ -3,6 +3,7 @@ import { banUser, unbanEmail, unbanPhone, getAllUsers, removeUserById } from '..
 import isAdmin from '../middlewares/isAdmin.js';
 import isTokenValid from '../middlewares/isTokenValid.js';
 import isTokenReceived from '../middlewares/isTokenReceived.js';
+import isIdValid from '../middlewares/isIdValid.js';
 
 const router = express.Router();
 
@@ -10,14 +11,24 @@ router.use(isTokenReceived)
 router.use(isTokenValid)
 router.use(isAdmin)
 
-router.post("/ban/:id", banUser);
+router
+    .route("/ban/:id")
+    .post(isIdValid, banUser);
 
-router.post("/unban-phone/:phone", unbanPhone);
+router
+    .route("/unban-phone/:phone")
+    .post(unbanPhone);
 
-router.post("/unban-email/:email", unbanEmail);
+router
+    .route("/unban-email/:email")
+    .post(unbanEmail);
 
-router.get("/", getAllUsers);
+router
+    .route("/")
+    .get(getAllUsers);
 
-router.delete("/:id", removeUserById);
+router
+    .route("/:id")
+    .delete(isIdValid, removeUserById);
 
 export default router;

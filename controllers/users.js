@@ -5,14 +5,8 @@ import mongoose from "mongoose";
 
 const banUser = async (req, res) => {
     try {
-        //^ Get the user id from the request params
+        //^ Get the user id from request object
         const { id } = req.params;
-
-        //^ Ceck if the user id is valid
-        const isIdValid = mongoose.Types.ObjectId.isValid(id);
-
-        //^ Return a 400 response if the user id is not valid
-        if (!isIdValid) { return res.status(400).json({ error: "Invalid user id" }); }
 
         //^ Find the user by id
         const user = await User.findById(id);
@@ -103,14 +97,8 @@ const getAllUsers = async (req, res) => {
 
 const removeUserById = async (req, res) => {
     try {
-        //^ Get the user id from the request params
+        //^ Get the user id from the request object
         const { id } = req.params;
-
-        //^ Ceck if the user id is valid
-        const isIdValid = mongoose.Types.ObjectId.isValid(id);
-
-        //^ Return a 400 response if the user id is not valid
-        if (!isIdValid) { return res.status(400).json({ error: "Invalid user id" }); }
 
         //^ Find the user by id
         const user = await User.findById(id);
