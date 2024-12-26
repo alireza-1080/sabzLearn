@@ -1,5 +1,5 @@
 import express from 'express';
-import { banUser, unbanEmail, unbanPhone, getAllUsers, removeUserById, changeRole } from '../controllers/users.js';
+import { banUser, unbanEmail, unbanPhone, getAllUsers, removeUserById, changeRole, updateUserInfo } from '../controllers/users.js';
 import isAdmin from '../middlewares/isAdmin.js';
 import isTokenValid from '../middlewares/isTokenValid.js';
 import isTokenReceived from '../middlewares/isTokenReceived.js';
@@ -21,7 +21,8 @@ router
 
 router
     .route("/")
-    .get(isTokenReceived, isTokenValid, isAdmin, getAllUsers);
+    .get(isTokenReceived, isTokenValid, isAdmin, getAllUsers)
+    .put(isTokenReceived, isTokenValid, updateUserInfo);
 
 router
     .route("/:id")

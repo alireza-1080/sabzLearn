@@ -1,6 +1,9 @@
 import BannedPhone from "../models/bannedPhone.js";
 import User from "../models/user.js";
 import BannedEmail from "../models/bannedEmail.js";
+import userValidator from "../validators/userValidator.js";
+import mongoose from "mongoose";
+import bcrypt from "bcrypt";
 
 const banUser = async (req, res) => {
     try {
@@ -149,4 +152,68 @@ const changeRole = async (req, res) => {
     }
 }
 
-export { banUser, unbanPhone, unbanEmail, getAllUsers, removeUserById, changeRole };
+const updateUserInfo = async (req, res) => {
+    try {
+        //^ Get the user id from the request object
+        const id = req.userId;
+
+        //^ Check if the id is valid
+        const isIdValid = mongoose.Types.ObjectId.isValid(id);
+
+        //^ Return a 400 response if the id is invalid
+        if (!isIdValid) {
+            return res.status(400).json({ error: "Invalid user id" });
+        }
+
+        //^ Find the user by id
+        const user = await User.findById(id);
+
+        //^ Return a 404 response if the user is not found
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        //^ Get the new user info from the request body
+        const { firstName: newFirstName, lastName: newLastName, email: newEmail, phone: newPhone, username: newUsername, password: newPassword, confirmPassword } = req.body;
+
+        //^ Create new user object
+        const newUser = {
+            firstName: newFirstName ? newFirstName : user.firstName,
+            lastName: newLastName ? newLastName : user.lastName,
+            email: newEmail ? newEmail.toLowerCase() : user.email,
+            phone: newPhone ? newPhone : user.phone,
+            username: newUsername ? newUsername.toLowerCase() : user.username,
+            password: newPassword ? newPassword : "ValidPassword123!",
+            confirmPassword: confirmPassword ? confirmPassword : "ValidPassword123!",
+        };
+
+        console.log(newUser);
+
+        //^ Validate the new user info
+        const { error } = userValidator.validate(newUser);
+
+        //^ Return a 400 response if the new user info is invalid
+        if (error) {
+            return res.status(400).json({ error: error.message });
+        }
+
+        //^ Hash the new password
+        if (newPassword) {
+            newUser.password = await bcrypt.hash(newUser.password, 10);
+        } else {
+            delete newUser.password;
+        }
+
+        //^ Update the user info
+        await User.findByIdAndUpdate(id, newUser);
+
+        //^ Return a 200 response
+        return res.status(200).json({ message: "User info updated successfully" });
+    }
+    //^ Catch any error that occurs & return a 500 response
+    catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+}
+
+export { banUser, unbanPhone, unbanEmail, getAllUsers, removeUserById, changeRole, updateUserInfo };
