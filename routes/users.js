@@ -7,32 +7,28 @@ import isIdValid from '../middlewares/isIdValid.js';
 
 const router = express.Router();
 
-router.use(isTokenReceived)
-router.use(isTokenValid)
-router.use(isAdmin)
-
 router
     .route("/ban/:id")
-    .post(isIdValid, banUser);
+    .post(isTokenReceived, isTokenValid, isAdmin, isIdValid, banUser);
 
 router
     .route("/unban-phone/:phone")
-    .post(unbanPhone);
+    .post(isTokenReceived, isTokenValid, isAdmin, unbanPhone);
 
 router
     .route("/unban-email/:email")
-    .post(unbanEmail);
+    .post(isTokenReceived, isTokenValid, isAdmin, unbanEmail);
 
 router
     .route("/")
-    .get(getAllUsers);
+    .get(isTokenReceived, isTokenValid, isAdmin, getAllUsers);
 
 router
     .route("/:id")
-    .delete(isIdValid, removeUserById);
+    .delete(isTokenReceived, isTokenValid, isAdmin, isIdValid, removeUserById);
 
 router
     .route("/role/:id")
-    .put(isIdValid, changeRole);
+    .put(isTokenReceived, isTokenValid, isAdmin, isIdValid, changeRole);
 
 export default router;
