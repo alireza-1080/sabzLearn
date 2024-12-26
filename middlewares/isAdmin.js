@@ -11,7 +11,7 @@ const isAdmin = async (req, res, next) => {
 
         //^ Return a 404 response if the user is not found
         if (!user) {
-            return res.status(404).json({ error: "Sender id is not avaialble in database" });
+            return res.status(404).json({ error: "Client user not found" });
         }
         
         //^ Return a 403 response if the user is not an admin

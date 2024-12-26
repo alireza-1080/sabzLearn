@@ -1,5 +1,5 @@
 import express from 'express';
-import { banUser, unbanEmail, unbanPhone, getAllUsers } from '../controllers/users.js';
+import { banUser, unbanEmail, unbanPhone, getAllUsers, removeUserById } from '../controllers/users.js';
 import isAdmin from '../middlewares/isAdmin.js';
 import isTokenValid from '../middlewares/isTokenValid.js';
 import isTokenReceived from '../middlewares/isTokenReceived.js';
@@ -17,5 +17,7 @@ router.post("/unban-phone/:phone", unbanPhone);
 router.post("/unban-email/:email", unbanEmail);
 
 router.get("/", getAllUsers);
+
+router.delete("/:id", removeUserById);
 
 export default router;

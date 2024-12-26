@@ -1,12 +1,18 @@
 import BannedPhone from "../models/bannedPhone.js";
 import User from "../models/user.js";
 import BannedEmail from "../models/bannedEmail.js";
-
+import mongoose from "mongoose";
 
 const banUser = async (req, res) => {
     try {
         //^ Get the user id from the request params
         const { id } = req.params;
+
+        //^ Ceck if the user id is valid
+        const isIdValid = mongoose.Types.ObjectId.isValid(id);
+
+        //^ Return a 400 response if the user id is not valid
+        if (!isIdValid) { return res.status(400).json({ error: "Invalid user id" }); }
 
         //^ Find the user by id
         const user = await User.findById(id);
@@ -95,4 +101,37 @@ const getAllUsers = async (req, res) => {
     }
 }
 
-export { banUser, unbanPhone, unbanEmail, getAllUsers };
+const removeUserById = async (req, res) => {
+    try {
+        //^ Get the user id from the request params
+        const { id } = req.params;
+
+        //^ Ceck if the user id is valid
+        const isIdValid = mongoose.Types.ObjectId.isValid(id);
+
+        //^ Return a 400 response if the user id is not valid
+        if (!isIdValid) { return res.status(400).json({ error: "Invalid user id" }); }
+
+        //^ Find the user by id
+        const user = await User.findById(id);
+
+        //^ Return a 404 response if the user is not found
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        //^ Delete the user from the database
+        await User.findByIdAndDelete(id);
+
+        //^ Return a 200 response
+        return res.status(200).json({ message: "User removed from database successfully" });
+
+    }
+    //^ Catch any error that occurs & return a 500 response
+    catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+}
+
+
+export { banUser, unbanPhone, unbanEmail, getAllUsers, removeUserById };
