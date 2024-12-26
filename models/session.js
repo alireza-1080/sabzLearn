@@ -22,7 +22,11 @@ const sessionSchema = new mongoose.Schema({
         ref: "Course",
         required: true
     }
-});
+},
+    {
+        timestamps: true
+    }
+);
 
 const Session = mongoose.model("Session", sessionSchema);
 
