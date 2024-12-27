@@ -29,7 +29,7 @@ const coverUploader = multer({
     storage,
     fileFilter,
     limits: {
-        fileSize: 1024 * 1024 * 2, // 2 MB
+        fileSize: 1024 * 1024 * 2, //^ 2 MB
     },
 });
 
