@@ -25,6 +25,7 @@ const courseSchema = new mongoose.Schema({
         enum: {
             values: ["telegram", "website"],
             message: "Course support must be either telegram or website",
+        }
     },
     price: {
         type: Number,
