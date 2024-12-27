@@ -33,5 +33,6 @@ const courseCoverUploader = multer({
     },
 });
 
+//^ Test if contribution is working 
 export default coverUploader;
 
