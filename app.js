@@ -12,10 +12,6 @@ import categoryRouter from './routes/categories.js';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 
-console.log(__dirname);
-
-
-
 const app = express();
 
 app.use(helmet());
