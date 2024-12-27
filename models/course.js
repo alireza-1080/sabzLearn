@@ -4,6 +4,7 @@ const courseSchema = new mongoose.Schema({
     title: {
         type: String,
         required: [true, "Course title is required"],
+        unique: [true, "Course title must be unique"],
         index: true,
     },
     description: {
@@ -21,6 +22,9 @@ const courseSchema = new mongoose.Schema({
     support: {
         type: String,
         required: [true, "Course support is required"],
+        enum: {
+            values: ["telegram", "website"],
+            message: "Course support must be either telegram or website",
     },
     price: {
         type: Number,

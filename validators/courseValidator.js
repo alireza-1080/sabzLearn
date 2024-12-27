@@ -22,7 +22,8 @@ const courseValidator = Joi.object({
     support: Joi
         .string()
         .required()
-        .trim(),
+        .trim()
+        .valid("telegram", "website"),
     price: Joi
         .number()
         .required()
