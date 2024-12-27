@@ -25,7 +25,7 @@ const fileFilter = (req, file, cb) => {
 };
 
 //^ Set up the upload middleware
-const coverUploader = multer({
+const courseCoverUploader = multer({
     storage,
     fileFilter,
     limits: {
