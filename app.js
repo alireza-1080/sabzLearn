@@ -26,5 +26,3 @@ app.use('/categories', categoryRouter);
 
 export default app;
 export { __dirname };
-
-//! Test
