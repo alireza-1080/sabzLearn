@@ -5,18 +5,18 @@ import crypto from "crypto";
 
 //^ Set up the storage engine
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
+    destination: (_req, _file, cb) => {
         cb(null, path.join(__dirname, "public", "courses", "covers"));
     },
-    filename: (req, file, cb) => {
+    filename: (_req, file, cb) => {
         const uniqueSuffix = Date.now() + '-' + crypto.randomBytes(8).toString('hex');
         cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
     }
 });
 
 //^ Set up the file filter
-const fileFilter = (req, file, cb) => {
-    const allowedFileTypes = ["image/jpeg", "image/jpg", "image/png"];
+const fileFilter = (_req, file, cb) => {
+    const allowedFileTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
     if (allowedFileTypes.includes(file.mimetype)) {
         cb(null, true);
     } else {
@@ -29,10 +29,8 @@ const courseCoverUploader = multer({
     storage,
     fileFilter,
     limits: {
-        fileSize: 1024 * 1024 * 2, //^ 2 MB
+        fileSize: 1024 * 1024 * 2,    //^ 2 MB
     },
 });
 
-//^ Test if contribution is working 
-export default coverUploader;
-
+export default courseCoverUploader;
