@@ -64,7 +64,7 @@ const createCourse = async (req, res) => {
 const getCourses = async (req, res) => {
     try {
         //^ Get all courses from the database
-        const courses = await Course.find();
+        const courses = await Course.find().populate("category").populate("instructor", { password: 0 });
 
         //^ Return a 200 response with the courses
         return res.status(200).json(courses);
@@ -75,7 +75,29 @@ const getCourses = async (req, res) => {
     }
 };
 
-const getCourse = async (req, res) => { };
+const getCourse = async (req, res) => {
+    try {
+        //^ Get the course ID from the request parameters
+        const { id } = req.params;
+
+        //^ Find the course by ID
+        const course = await Course.findById(id).select({ __v: 0 , createdAt: 0, updatedAt: 0 })
+        .populate("category", { __v: 0, createdAt: 0, updatedAt: 0 })
+        .populate("instructor", { password: 0, __v: 0, createdAt: 0, updatedAt: 0 });
+
+        //^ Return a 404 response if the course is not found
+        if (!course) {
+            return res.status(404).json({ error: "Course not found" });
+        }
+
+        //^ Return a 200 response with the course
+        return res.status(200).json(course);
+    }
+    //^ Catch any errors and return a 500 response
+    catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+};
 
 const updateCourse = async (req, res) => { };
 
