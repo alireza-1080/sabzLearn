@@ -25,7 +25,11 @@ router
 router
     .route('/:id')
     .get(getCourse)
-    .put(isTokenReceived, isTokenValid, isAdmin, updateCourse)
+    .put(isTokenReceived,
+        isTokenValid,
+        isAdmin,
+        courseCoverUploader.single('cover'),
+        updateCourse)
     .delete(isTokenReceived, isTokenValid, isAdmin, deleteCourse);
 
 export default router;
