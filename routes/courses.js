@@ -16,7 +16,11 @@ router
         courseCoverUploader.single('cover'),
         createCourse
     )
-    .get(getCourses);
+    .get(
+        isTokenReceived,
+        isTokenValid,
+        isAdmin,
+        getCourses);
 
 router
     .route('/:id')

@@ -36,13 +36,10 @@ const createCourse = async (req, res) => {
 
         //^ Validate the course data
         const { error, value } = courseValidator.validate(courseSample);
-        console.log(value);
 
         //^ Return a 400 response if there is a validation error
         if (error) {
-            //^ Delete the uploaded cover
-            fs.unlinkSync(cover);
-            return res.status(400).json({ error: error.message });
+            throw new Error(error);
         }
 
         //^ Create a new course object
@@ -56,11 +53,27 @@ const createCourse = async (req, res) => {
     }
     //^ Catch any errors and return a 500 response
     catch (error) {
+        //^ Delete the uploaded cover if an error occurs
+        if (req.file && req.file.path) {
+            fs.unlinkSync(req.file.path);
+        }
         return res.status(500).json({ error: error.message });
     }
 };
 
-const getCourses = async (req, res) => { };
+const getCourses = async (req, res) => {
+    try {
+        //^ Get all courses from the database
+        const courses = await Course.find();
+
+        //^ Return a 200 response with the courses
+        return res.status(200).json(courses);
+    }
+    //^ Catch any errors and return a 500 response
+    catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+};
 
 const getCourse = async (req, res) => { };
 
