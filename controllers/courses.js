@@ -1,6 +1,7 @@
 import Course from "../models/course.js";
 import courseValidator from "../validators/courseValidator.js";
 import fs from "fs";
+import idValidator from "../validators/idValidator.js";
 
 const createCourse = async (req, res) => {
     try {
@@ -80,6 +81,14 @@ const getCourse = async (req, res) => {
         //^ Get the course ID from the request parameters
         const { id } = req.params;
 
+        //^ Validate the course ID
+        const { error } = idValidator.validate({ id });
+
+        //^ Return a 400 response if there is a validation error
+        if (error) {
+            return res.status(400).json({ error: error });
+        }
+
         //^ Find the course by ID
         const course = await Course.findById(id).select({ __v: 0, createdAt: 0, updatedAt: 0 })
             .populate("category", { __v: 0, createdAt: 0, updatedAt: 0 })
@@ -103,6 +112,15 @@ const updateCourse = async (req, res) => {
     try {
         //^ Get the course ID from the request parameters
         const { id } = req.params;
+
+        //^ Validate the course ID
+        const { error: validationError } = idValidator.validate({ id });
+
+        //^ Return a 400 response if there is a validation error
+
+        if (validationError) {
+            return res.status(400).json({ error: validationError.message });
+        }
 
         //^ Find the course by ID
         const course = await Course.findById(id);
@@ -186,6 +204,14 @@ const deleteCourse = async (req, res) => {
     try {
         //^ Get the course ID from the request parameters
         const { id } = req.params;
+
+        //^ Validate the course ID
+        const { error: validationError } = idValidator.validate({ id });
+
+        //^ Return a 400 response if there is a validation error
+        if (validationError) {
+            return res.status(400).json({ error: validationError.message });
+        }
 
         //^ Find the course by ID
         const course = await Course.findById(id);
