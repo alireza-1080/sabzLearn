@@ -9,6 +9,7 @@ import helmet from 'helmet';
 import categoryRouter from './routes/categories.js';
 import coursesRouter from './routes/courses.js';
 import sessionRouter from './routes/sessions.js';
+import commentRouter from './routes/comments.js';
 
 //^ Fix for __dirname not being defined in ES6 modules
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -27,6 +28,7 @@ app.use('/users', userRouter);
 app.use('/categories', categoryRouter);
 app.use('/courses', coursesRouter);
 app.use('/sessions', sessionRouter);
+app.use('/comments', commentRouter);
 
 export default app;
 export { __dirname };

@@ -27,23 +27,26 @@ const commentValidator = Joi.object({
         .required()
         .min(1)
         .max(5)
-        .enum([1, 2, 3, 4, 5])
         .messages({
             'number.min': 'Rate should be a minimum of 1',
             'number.max': 'Rate should be a maximum of 5',
             'number.base': 'Rate should be a number',
         }),
     isItReply: Joi
-        .boolean(),
+        .boolean()
+        .required(),
     mainComment: Joi
         .string()
         .trim()
         .pattern(new RegExp('^[0-9a-fA-F]{24}$'))
         .messages({
             'string.pattern.base': 'Main Comment ID must be a valid ObjectId',
-        }),
-},
-).strict();
+        })
+}).strict().when(Joi.object({ isItReply: Joi.boolean().valid(true) }), {
+    then: Joi.object({
+        mainComment: Joi.string().required()
+    })
+});
 
 commentValidator.options({ abortEarly: false });
 

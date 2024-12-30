@@ -23,15 +23,20 @@ const commentSchema = new mongoose.Schema({
         type: Number,
         required: true,
         enum: [1, 2, 3, 4, 5],
-        default: 5,
     },
     isItReply: {
         type: Boolean,
-        default: false,
+        required: true,
     },
     mainComment: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Comment",
+        validate: {
+            validator: function (v) {
+                return !this.isItReply || (this.isItReply && v != null);
+            },
+            message: "mainComment is required if isItReply is true"
+        }
     },
 },
     {
@@ -40,5 +45,4 @@ const commentSchema = new mongoose.Schema({
 
 const Comment = mongoose.model("Comment", commentSchema);
 
-
-
+export default Comment;
