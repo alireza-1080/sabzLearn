@@ -160,4 +160,34 @@ const deleteComment = async (req, res) => {
     }
 };
 
-export { createComment, getComments, getComment, deleteComment };
+const approveComment = async (req, res) => {
+    try {
+        //^ Get the comment id from the request parameters
+        const { id } = req.params;
+
+        //^ Validate the comment id
+        const { error: commentIdValidationError } = idValidator.validate({ id });
+
+        //^ Return a 400 response if there is a validation error
+        if (commentIdValidationError) {
+            throw new Error("Comment ID must be a valid ObjectId");
+        }
+
+        //^ Find the comment by id and update it
+        const comment = await Comment.findByIdAndUpdate(id, { isApproved: true });
+
+        //^ Return a 404 response if the comment is not found
+        if (!comment) {
+            throw new Error("Comment not found");
+        }
+
+        //^ Return a 200 response if the comment is successfully approved
+        return res.status(200).json({ message: "Comment approved successfully" });
+    }
+    //^ Catch any errors and return a 500 response
+    catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+}
+
+export { createComment, getComments, getComment, deleteComment, approveComment };
