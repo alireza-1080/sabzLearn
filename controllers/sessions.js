@@ -55,7 +55,23 @@ const createSession = async (req, res) => {
 }
 
 
-const getSessions = async (req, res) => { };
+const getSessions = async (req, res) => {
+    try {
+        //^Get all sessions from the database
+        const sessions = await Session
+            .find({})
+            .select({ createdAt: 0, updatedAt: 0, __v: 0 })
+            .populate('course', { createdAt: 0, updatedAt: 0, __v: 0 })
+            .populate('instructor', { password: 0, createdAt: 0, updatedAt: 0, __v: 0 });
+
+        //^Return a 200 response with the sessions
+        return res.status(200).json(sessions);
+    }
+    //^Catch any errors and return a 500 response
+    catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+};
 
 const getSession = async (req, res) => { };
 
