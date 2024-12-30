@@ -97,8 +97,67 @@ const getComments = async (req, res) => {
     }
 };
 
-const getComment = async (req, res) => { };
+const getComment = async (req, res) => {
+    try {
+        //^ Get the comment ID from the request parameters
+        const { id } = req.params;
 
-const deleteComment = async (req, res) => { };
+        //^ Validate the comment ID
+        const { error: commentIdValidationError } = idValidator.validate({ id });
+
+        //^ Return a 400 response if there is a validation error
+        if (commentIdValidationError) {
+            throw new Error("Comment ID must be a valid ObjectId");
+        }
+
+        //^ Find the comment by ID
+        const comment = await Comment
+            .findById(id, { createdAt: 0, updatedAt: 0, __v: 0 })
+            .populate("course", { title: 1 })
+            .populate("creator", { password: 0, createdAt: 0, updatedAt: 0, __v: 0 });
+
+        //^ Return a 404 response if the comment does not exist
+        if (!comment) {
+            throw new Error("Comment not found");
+        }
+
+        //^ Return a 200 response with the comment
+        return res.status(200).json(comment);
+    }
+    //^ Catch any errors and return a 500 response
+    catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+};
+
+const deleteComment = async (req, res) => {
+    try {
+        //^ Get the comment ID from the request parameters
+        const { id } = req.params;
+
+        //^ Validate the comment ID
+        const { error: commentIdValidationError } = idValidator.validate({ id });
+
+        //^ Return a 400 response if there is a validation error
+        if (commentIdValidationError) {
+            throw new Error("Comment ID must be a valid ObjectId");
+        }
+
+        //^ Delete the comment from the database
+        const comment = await Comment.findByIdAndDelete(id);
+
+        //^ Return a 404 response if the comment does not exist
+        if (!comment) {
+            throw new Error("Comment not found");
+        }
+
+        //^ Return a 200 response if the comment is successfully deleted
+        return res.status(200).json({ message: "Comment deleted successfully" });
+    }
+    //^ Catch any errors and return a 500 response
+    catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+};
 
 export { createComment, getComments, getComment, deleteComment };
