@@ -119,7 +119,7 @@ const updateCourse = async (req, res) => {
         //^ Return a 400 response if there is a validation error
 
         if (validationError) {
-            return res.status(400).json({ error: validationError.message });
+            throw new Error(validationError);
         }
 
         //^ Find the course by ID
@@ -127,7 +127,7 @@ const updateCourse = async (req, res) => {
 
         //^ Return a 404 response if the course is not found
         if (!course) {
-            return res.status(404).json({ error: "Course not found" });
+            throw new Error("Course not found");
         }
 
         //^ Get the cover from the request file if available

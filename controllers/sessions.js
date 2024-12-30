@@ -108,8 +108,82 @@ const getSession = async (req, res) => {
     }
 };
 
-const updateSession = async (req, res) => { };
+const updateSession = async (req, res) => {
+    try {
+        //^Get the session id from the request parameters
+        const { id } = req.params;
 
-const deleteSession = async (req, res) => { };
+        //^Validate the session id
+        const { error: validationError } = idValidator.validate({ id });
+
+        //^Return a 400 response if the id is invalid
+        if (validationError) {
+            throw new Error(validationError);
+        }
+
+        //^Find the session in the database by id
+        const session = await Session.findById(id);
+
+        //^Return a 404 response if the session is not found
+        if (!session) {
+            throw new Error("Session not found");
+        }
+
+        //^ Get the video from the request file if available
+        const video = req.file ? req.file.path : session.video;
+
+        //^Get the rest of the session details from the request body
+        const { title, time, isItFree, course } = req.body;
+
+        //^ Get instructor from the request user
+        const instructor = req.userId;
+
+        //^Create session test data
+        const sessionSample = {
+            title: title ? title : session.title,
+            time: time ? time : session.time,
+            video: video ? video : session.video,
+            isItFree: isItFree ? isItFree : session.isItFree,
+            course: course ? course : session.course.toString(),
+            instructor: instructor ? instructor : session.instructor
+        };
+        console.log(sessionSample);
+
+        //^Validate the session data
+        const { error, value } = sessionValidator.validate(sessionSample);
+
+        //^Return a 400 response if there is a validation error
+        if (error) {
+            throw new Error(error);
+        }
+
+        //^ Remove the old video if a new video is uploaded
+        if (req.file && req.file.path !== session.video) {
+            fs.unlinkSync(session.video);
+        }
+
+        //^Update the session in the database
+        const updateResult = await Session.findOneAndUpdate({ _id: id }, value);
+
+        //^Return a 200 response if the session is successfully updated
+        if (updateResult) {
+            return res.status(200).json({ message: "Session updated successfully" });
+        }
+        //^Return a 500 response if the session is not updated
+        else {
+            return res.status(500).json({ error: "Session could not be updated" });
+        }
+    }
+    //^Catch any errors and return a 500 response
+    catch (error) {
+        //^Delete the uploaded video if an error occurs
+        if (req.file && req.file.path) {
+            fs.unlinkSync(req.file.path);
+        }
+        return res.status(500).json({ error: error.message });
+    };
+}
+
+const deleteSession = async (req, res) => {};
 
 export { createSession, getSessions, getSession, updateSession, deleteSession };

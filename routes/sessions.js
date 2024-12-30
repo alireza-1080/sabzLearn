@@ -25,6 +25,7 @@ router
         isTokenReceived,
         isTokenValid,
         isAdmin,
+        sessionVideoUploader.single('video'),
         updateSession
     )
     .delete(
