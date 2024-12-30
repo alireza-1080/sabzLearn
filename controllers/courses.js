@@ -145,7 +145,6 @@ const updateCourse = async (req, res) => {
             category: newCategory ? newCategory : course.category.toString(),
             instructor,
         };
-        // console.log(courseSample);
 
         //^ Validate the course data
         const { error, value } = courseValidator.validate(courseSample);

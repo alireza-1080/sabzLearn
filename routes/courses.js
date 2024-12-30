@@ -16,20 +16,23 @@ router
         courseCoverUploader.single('cover'),
         createCourse
     )
-    .get(
-        isTokenReceived,
-        isTokenValid,
-        isAdmin,
-        getCourses);
+    .get(getCourses);
 
 router
     .route('/:id')
     .get(getCourse)
-    .put(isTokenReceived,
+    .put(
+        isTokenReceived,
         isTokenValid,
         isAdmin,
         courseCoverUploader.single('cover'),
-        updateCourse)
-    .delete(isTokenReceived, isTokenValid, isAdmin, deleteCourse);
+        updateCourse
+    )
+    .delete(
+        isTokenReceived,
+        isTokenValid,
+        isAdmin,
+        deleteCourse
+    );
 
 export default router;

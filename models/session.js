@@ -15,11 +15,16 @@ const sessionSchema = new mongoose.Schema({
     },
     isItFree: {
         type: Boolean,
-        required: true
+        default: false
     },
     course: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Course",
+        required: true
+    },
+    instructor: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
         required: true
     }
 },

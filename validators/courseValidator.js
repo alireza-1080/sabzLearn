@@ -98,9 +98,11 @@ const courseValidator = Joi.object({
         .string()
         .required()
         .trim()
+        .pattern(/^[0-9a-fA-F]{24}$/)
         .messages({
             "string.base": "Instructor must be a string",
             "string.empty": "Instructor is required",
+            "string.pattern.base": "Instructor is not valid",
         }),
 });
 // .strict();

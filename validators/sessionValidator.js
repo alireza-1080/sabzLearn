@@ -17,13 +17,16 @@ const sessionValidator = Joi.object({
         .trim()
         .min(3),
     isItFree: Joi
-        .boolean()
-        .required(),
+        .boolean(),
     course: Joi
         .string()
         .required()
         .trim()
-        .min(3)
+        .pattern(new RegExp('^[0-9a-fA-F]{24}$')),
+    instructor: Joi
+        .string()
+        .required()
+        .trim()
         .pattern(new RegExp('^[0-9a-fA-F]{24}$'))
 }).strict();
 
