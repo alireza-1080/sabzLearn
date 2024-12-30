@@ -80,16 +80,25 @@ const createComment = async (req, res) => {
     }
 };
 
-const getComments = async (req, res) => { };
+const getComments = async (req, res) => {
+    try {
+        //^ Get all comments from the database
+        const comments = await Comment
+            .find({}, { createdAt: 0, updatedAt: 0, __v: 0 })
+            .populate("course", { title: 1 })
+            .populate("creator", { password: 0, createdAt: 0, updatedAt: 0, __v: 0 });
+
+        //^ Return a 200 response with the comments
+        return res.status(200).json(comments);
+    }
+    //^ Catch any errors and return a 500 response
+    catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+};
 
 const getComment = async (req, res) => { };
 
 const deleteComment = async (req, res) => { };
 
-export { createComment, getComments, getComment, deleteComment }
-
-
-
-
-
-// }
+export { createComment, getComments, getComment, deleteComment };
