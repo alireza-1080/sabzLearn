@@ -5,6 +5,7 @@ import idValidator from "../validators/idValidator.js";
 import User from "../models/user.js";
 import CourseUser from "../models/courseUser.js";
 import courseUserValidator from "../validators/courseUser.js";
+import Category from "../models/category.js";
 
 const createCourse = async (req, res) => {
     try {
@@ -330,4 +331,38 @@ const registerCourse = async (req, res) => {
     }
 };
 
-export { createCourse, getCourses, getCourse, updateCourse, deleteCourse, registerCourse };
+const getCoursesbyCategory = async (req, res) => {
+    try {
+        //^ Get the category ID from the request parameters
+        const { id } = req.params;
+
+        //^ Validate the category ID
+        const { error: categoryIdValidation } = idValidator.validate({ id });
+
+        //^ Return a 400 response if there is a validation error
+        if (categoryIdValidation) {
+            throw new Error("Category ID must be a valid ObjectId");
+        }
+
+        //^ Find the category by ID
+        const category = await Category.findById(id);
+
+        //^ Return a 404 response if the category is not found
+        if (!category) {
+            throw new Error("Category not found");
+        }
+
+        //^ Find the courses by category ID
+        const courses = await Course.find({ category: id }, { __v: 0, createdAt: 0, updatedAt: 0 })
+        .populate("instructor", {firstName: 1, lastName: 1});
+
+        //^ Return a 200 response with the courses
+        return res.status(200).json(courses);
+    }
+    //^ Catch any errors and return a 500 response
+    catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+}
+
+export { createCourse, getCourses, getCourse, updateCourse, deleteCourse, registerCourse, getCoursesbyCategory };

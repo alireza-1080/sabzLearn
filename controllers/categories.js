@@ -1,5 +1,6 @@
 import Category from "../models/category.js";
 import categoryValidator from "../validators/categoryValidator.js";
+import idValidator from "../validators/idValidator.js";
 
 const createCategory = async (req, res) => {
     try {
@@ -108,4 +109,34 @@ const deleteCategory = async (req, res) => {
     }
 };
 
-export { createCategory, getCategories, updateCategory, deleteCategory };
+const getCategoryById = async (req, res) => {
+    try {
+        //^ Get the category ID from the request parameters
+        const { id } = req.params;
+
+        //^ Validate the category ID
+        const { error: categoryIdValidation } = idValidator.validate({ id });
+
+        //^ Return a 400 response if there is a validation error
+        if (categoryIdValidation) {
+            throw new Error("Category ID must be a valid ObjectId");
+        }
+
+        //^ Find the category by ID
+        const category = await Category.findById(id);
+
+        //^ Return a 404 response if the category is not found
+        if (!category) {
+            throw new Error("Category not found");
+        }
+
+        //^ Return a 200 response with the category
+        return res.status(200).json(category);
+    }
+    //^ Catch any errors and return a 500 response
+    catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+}
+
+export { createCategory, getCategories, updateCategory, deleteCategory, getCategoryById };

@@ -19,14 +19,6 @@ router
     .get(getCourses);
 
 router
-    .route('/register/:id')
-    .post(
-        isTokenReceived,
-        isTokenValid,
-        registerCourse
-    );
-
-router
     .route('/:id')
     .get(getCourse)
     .put(
@@ -41,6 +33,14 @@ router
         isTokenValid,
         isAdmin,
         deleteCourse
+    );
+
+router
+    .route('/:id/register')
+    .post(
+        isTokenReceived,
+        isTokenValid,
+        registerCourse
     );
 
 export default router;
