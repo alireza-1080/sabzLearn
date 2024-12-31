@@ -98,7 +98,28 @@ const getCourse = async (req, res) => {
             .populate("category", { __v: 0, createdAt: 0, updatedAt: 0 })
             .populate("instructor", { password: 0, __v: 0, createdAt: 0, updatedAt: 0 })
             .populate('sessions', { __v: 0, createdAt: 0, updatedAt: 0 })
-            .populate('comments', { __v: 0, createdAt: 0, updatedAt: 0 })
+            .populate({
+            path: 'comments',
+            match: { isApproved: true },
+            select: { __v: 0, createdAt: 0, updatedAt: 0 }
+            });
+
+        //^ Get the number of subscribers for the course
+        const subscribersCount = await CourseUser.countDocuments({ course: id });
+        course._doc.subscribersCount = subscribersCount;
+
+        //^ Get the average rating for the course
+        const courseComments = course.comments;
+        let totalRating = 0;
+        let totalComments = 0;
+        courseComments.forEach(comment => {
+            totalRating += comment.rate;
+            totalComments++;
+        });
+        const averageRating = totalRating / totalComments;
+
+        //^ Add the average rating to the course object
+        course._doc.averageRating = averageRating;
 
         //^ Return a 404 response if the course is not found
         if (!course) {
