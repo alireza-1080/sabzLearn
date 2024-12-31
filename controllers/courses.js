@@ -6,6 +6,8 @@ import User from "../models/user.js";
 import CourseUser from "../models/courseUser.js";
 import courseUserValidator from "../validators/courseUser.js";
 import Category from "../models/category.js";
+import jwt from "jsonwebtoken";
+import courseUser from "../validators/courseUser.js";
 
 const createCourse = async (req, res) => {
     try {
@@ -99,10 +101,15 @@ const getCourse = async (req, res) => {
             .populate("instructor", { password: 0, __v: 0, createdAt: 0, updatedAt: 0 })
             .populate('sessions', { __v: 0, createdAt: 0, updatedAt: 0 })
             .populate({
-            path: 'comments',
-            match: { isApproved: true },
-            select: { __v: 0, createdAt: 0, updatedAt: 0 }
+                path: 'comments',
+                match: { isApproved: true },
+                select: { __v: 0, createdAt: 0, updatedAt: 0 }
             });
+
+        //^ Return a 404 response if the course is not found
+        if (!course) {
+            return res.status(404).json({ error: "Course not found" });
+        }
 
         //^ Get the number of subscribers for the course
         const subscribersCount = await CourseUser.countDocuments({ course: id });
@@ -121,10 +128,36 @@ const getCourse = async (req, res) => {
         //^ Add the average rating to the course object
         course._doc.averageRating = averageRating;
 
-        //^ Return a 404 response if the course is not found
-        if (!course) {
-            return res.status(404).json({ error: "Course not found" });
+        //* Check if the user is subscribed to the course
+        //^ Get the request headers
+        const { authorization } = req.headers;
+
+        //^ Extract the access token from the request headers if available
+        const accessToken = authorization ? authorization.replace("Bearer ", "") : null;
+
+        //^ Return the course with isSubscribed: false if the access token is not provided
+        if (!accessToken) {
+            course._doc.isSubscribed = false;
+            return res.status(200).json(course);
         }
+
+        //^ Validate the access token
+        const accessTokenValidation = jwt.verify(accessToken, process.env.JWT_SECRET);
+
+        //^ Return the course with isSubscribed: false if the access token is not valid
+        if (!accessTokenValidation) {
+            course._doc.isSubscribed = false;
+            return res.status(200).json(course);
+        }
+
+        //^ Get the user ID from the access token
+        const userId = accessTokenValidation.userId;
+
+        //^ Check if the user is subscribed to the course
+        const userCourse = await CourseUser.findOne({ course: id, user: userId })
+
+        //^ Add isSubscribed to the course object
+        course._doc.isSubscribed = userCourse ? true : false;
 
         //^ Return a 200 response with the course
         return res.status(200).json(course);
@@ -377,7 +410,7 @@ const getCoursesbyCategory = async (req, res) => {
 
         //^ Find the courses by category ID
         const courses = await Course.find({ category: id }, { __v: 0, createdAt: 0, updatedAt: 0 })
-        .populate("instructor", {firstName: 1, lastName: 1});
+            .populate("instructor", { firstName: 1, lastName: 1 });
 
         //^ Return a 200 response with the courses
         return res.status(200).json(courses);

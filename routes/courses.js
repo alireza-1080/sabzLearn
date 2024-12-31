@@ -20,7 +20,9 @@ router
 
 router
     .route('/:id')
-    .get(getCourse)
+    .get(
+        getCourse
+    )
     .put(
         isTokenReceived,
         isTokenValid,
