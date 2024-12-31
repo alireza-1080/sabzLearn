@@ -135,18 +135,18 @@ const getCourse = async (req, res) => {
         //^ Extract the access token from the request headers if available
         const accessToken = authorization ? authorization.replace("Bearer ", "") : null;
 
-        //^ Return the course with isSubscribed: false if the access token is not provided
+        //^ Return the course with isUserSubscribedToTheCourse: false if the access token is not provided
         if (!accessToken) {
-            course._doc.isSubscribed = false;
+            course._doc.isUserSubscribedToTheCourse = false;
             return res.status(200).json(course);
         }
 
         //^ Validate the access token
         const accessTokenValidation = jwt.verify(accessToken, process.env.JWT_SECRET);
 
-        //^ Return the course with isSubscribed: false if the access token is not valid
+        //^ Return the course with isUserSubscribedToTheCourse: false if the access token is not valid
         if (!accessTokenValidation) {
-            course._doc.isSubscribed = false;
+            course._doc.isUserSubscribedToTheCourse = false;
             return res.status(200).json(course);
         }
 
@@ -156,8 +156,8 @@ const getCourse = async (req, res) => {
         //^ Check if the user is subscribed to the course
         const userCourse = await CourseUser.findOne({ course: id, user: userId })
 
-        //^ Add isSubscribed to the course object
-        course._doc.isSubscribed = userCourse ? true : false;
+        //^ Add isUserSubscribedToTheCourse to the course object
+        course._doc.isUserSubscribedToTheCourse = userCourse ? true : false;
 
         //^ Return a 200 response with the course
         return res.status(200).json(course);
