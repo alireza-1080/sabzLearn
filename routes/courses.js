@@ -1,12 +1,12 @@
 import express from 'express';
-import { createCourse, getCourses, getCourse, updateCourse, deleteCourse } from '../controllers/courses.js';
+import { createCourse, getCourses, getCourse, updateCourse, deleteCourse, registerCourse } from '../controllers/courses.js';
 import isTokenReceived from '../middlewares/isTokenReceived.js';
 import isTokenValid from '../middlewares/isTokenValid.js';
 import isAdmin from '../middlewares/isAdmin.js';
 import courseCoverUploader from '../utils/courseCoverUploader.js';
 
 const router = express.Router();
-
+console.log('Courses Router');
 router
     .route('/')
     .post(
@@ -17,6 +17,14 @@ router
         createCourse
     )
     .get(getCourses);
+
+router
+    .route('/register/:id')
+    .post(
+        isTokenReceived,
+        isTokenValid,
+        registerCourse
+    );
 
 router
     .route('/:id')

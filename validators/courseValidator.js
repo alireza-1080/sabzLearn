@@ -104,7 +104,7 @@ const courseValidator = Joi.object({
             "string.empty": "Instructor is required",
             "string.pattern.base": "Instructor is not valid",
         }),
-});
-// .strict();
+}).strict();
+
 
 export default courseValidator;

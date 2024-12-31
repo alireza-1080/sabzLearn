@@ -2,6 +2,9 @@ import Course from "../models/course.js";
 import courseValidator from "../validators/courseValidator.js";
 import fs from "fs";
 import idValidator from "../validators/idValidator.js";
+import User from "../models/user.js";
+import CourseUser from "../models/courseUser.js";
+import courseUserValidator from "../validators/courseUser.js";
 
 const createCourse = async (req, res) => {
     try {
@@ -245,4 +248,86 @@ const deleteCourse = async (req, res) => {
     }
 };
 
-export { createCourse, getCourses, getCourse, updateCourse, deleteCourse };
+const registerCourse = async (req, res) => {
+    try {
+        //^ Get the course ID from the request parameters
+        const { id } = req.params;
+
+        //^ Validate the course ID
+        const { error: courseValidationError } = idValidator.validate({ id });
+
+        //^ Return a 400 response if there is a validation error
+        if (courseValidationError) {
+            throw new Error("Course ID must be a valid ObjectId");
+        }
+
+        //^ Find the course by ID
+        const course = await Course.findById(id);
+
+        //^ Return a 404 response if the course is not found
+        if (!course) {
+            throw new Error("Course not found");
+        }
+
+        //^ Get the user ID from the request object
+        const user = req.userId;
+
+        //^ Validate the user ID
+        const { error: userValidationError } = idValidator.validate({ id: user });
+
+        //^ Return a 400 response if there is a validation error
+        if (userValidationError) {
+            throw new Error("User ID must be a valid ObjectId");
+        }
+
+        //^ Check if the user exists in User
+        const userExists = await User.findById(user);
+
+        //^ Return a 404 response if the user is not found
+        if (!userExists) {
+            throw new Error("User not found");
+        }
+
+        //^ Check if the user is already registered for the course
+        const userCourse = await CourseUser.findOne({ course: id, user });
+
+        //^ Return a 400 response if the user is already registered
+        if (userCourse) {
+            throw new Error("User already registered for this course");
+        }
+
+        //^ Get the course price from the request body
+        const { signUpPrice } = req.body;
+
+        //^ Create course user test data
+        const courseUserSample = {
+            course: id,
+            user,
+            signUpPrice,
+        };
+        console.log(courseUserSample);
+
+        //^ Validate the course user data
+        const { error: courseUserValidationError, value: validatedCourseUser } = courseUserValidator.validate(courseUserSample);
+
+        //^ Return a 400 response if there is a validation error
+        if (courseUserValidationError) {
+            throw new Error(courseUserValidationError);
+        }
+
+        //^ Create a new course user object
+        const courseUser = new CourseUser(validatedCourseUser);
+
+        //^ Save the course user to the database
+        await courseUser.save();
+
+        //^ Return a 201 response if the course user is successfully created
+        return res.status(201).json({ message: "Course registration successful" });
+    }
+    //^ Catch any errors and return a 500 response
+    catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+};
+
+export { createCourse, getCourses, getCourse, updateCourse, deleteCourse, registerCourse };
