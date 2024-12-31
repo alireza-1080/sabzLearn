@@ -96,7 +96,9 @@ const getCourse = async (req, res) => {
         //^ Find the course by ID
         const course = await Course.findById(id).select({ __v: 0, createdAt: 0, updatedAt: 0 })
             .populate("category", { __v: 0, createdAt: 0, updatedAt: 0 })
-            .populate("instructor", { password: 0, __v: 0, createdAt: 0, updatedAt: 0 });
+            .populate("instructor", { password: 0, __v: 0, createdAt: 0, updatedAt: 0 })
+            .populate('sessions', { __v: 0, createdAt: 0, updatedAt: 0 })
+            .populate('comments', { __v: 0, createdAt: 0, updatedAt: 0 })
 
         //^ Return a 404 response if the course is not found
         if (!course) {

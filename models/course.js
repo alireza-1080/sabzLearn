@@ -74,6 +74,9 @@ courseSchema.virtual("sessions", {
     justOne: false,
 });
 
+//^ Set the virtual field to populate when calling toJSON
+courseSchema.set("toJSON", { virtuals: true });
+
 //^ Create virtual field for course comments
 courseSchema.virtual("comments", {
     ref: "Comment",
@@ -81,6 +84,9 @@ courseSchema.virtual("comments", {
     foreignField: "course",
     justOne: false,
 });
+
+//^ Set the virtual field to populate when calling toJSON
+courseSchema.set("toJSON", { virtuals: true });
 
 const Course = mongoose.model("Course", courseSchema);
 
