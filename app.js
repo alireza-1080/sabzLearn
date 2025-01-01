@@ -11,6 +11,7 @@ import coursesRouter from './routes/courses.js';
 import sessionRouter from './routes/sessions.js';
 import commentRouter from './routes/comments.js';
 import contactUsRouter from './routes/contactUsRouter.js';
+import newsletterRouter from './routes/newsletterRouter.js';
 
 //^ Fix for __dirname not being defined in ES6 modules
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -39,6 +40,7 @@ app.use('/courses', coursesRouter);
 app.use('/sessions', sessionRouter);
 app.use('/comments', commentRouter);
 app.use('/contact-us', contactUsRouter);
+app.use('/newsletter', newsletterRouter);
 
 export default app;
 export { __dirname };
