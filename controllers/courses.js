@@ -102,7 +102,7 @@ const getCourse = async (req, res) => {
         //^ Find the course by ID
         const course = await Course.findById(id).select({ __v: 0, createdAt: 0, updatedAt: 0 })
             .populate("category", { __v: 0, createdAt: 0, updatedAt: 0 })
-            .populate("instructor", { firstName: 1, lastName:1 })
+            .populate("instructor", { firstName: 1, lastName: 1 })
             .populate('sessions', { __v: 0, createdAt: 0, updatedAt: 0 })
 
         //^ Return a 404 response if the course is not found
@@ -120,15 +120,13 @@ const getCourse = async (req, res) => {
         const comments = await Comments
             .find(
                 { course: id, isApproved: true, isItReply: false },
-                 { __v: 0, createdAt: 0, updatedAt: 0, course: 0 }
-                )
+                { __v: 0, createdAt: 0, updatedAt: 0, course: 0 }
+            )
             .populate(
                 "creator",
-                 { password: 0, __v: 0, createdAt: 0, updatedAt: 0 }
-                )
+                { password: 0, __v: 0, createdAt: 0, updatedAt: 0 }
+            )
             .populate({ path: "replies", populate: { path: "creator", select: { password: 0, __v: 0, createdAt: 0, updatedAt: 0 } } });
-
-        console.log(comments);
 
         //^ Replace the comments array in the course object with the comments
         course._doc.comments = comments;
@@ -380,7 +378,6 @@ const registerCourse = async (req, res) => {
             user,
             signUpPrice,
         };
-        console.log(courseUserSample);
 
         //^ Validate the course user data
         const { error: courseUserValidationError, value: validatedCourseUser } = courseUserValidator.validate(courseUserSample);
@@ -474,7 +471,57 @@ const getRelatedCoursesByCategory = async (req, res) => {
     catch (error) {
         return res.status(500).json({ error: error.message });
     }
+}
+
+const preSaleCourses = async (req, res) => {
+    try {
+        //^ Find the courses with status pre-sale
+        const courses = await Course.find({ status: "pre-sale" }, { __v: 0, createdAt: 0, updatedAt: 0 })
+            .populate("instructor", { firstName: 1, lastName: 1 });
+
+        //^ Return a 200 response with the courses
+        return res.status(200).json(courses);
+    }
+    //^ Catch any errors and return a 500 response
+    catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
 };
+
+const getPopularCourses = async (req, res) => {
+    try {
+        //^ Find the courses with the most subscribers
+        const courses = await Course.aggregate([
+            {
+                $lookup: {
+                    from: "courseusers",
+                    localField: "_id",
+                    foreignField: "course",
+                    as: "subscribers",
+                },
+            },
+            {
+                $addFields: {
+                    subscribersCount: { $size: "$subscribers" },
+                },
+            },
+            {
+                $sort: { subscribersCount: -1 },
+            },
+            {
+                $project: { subscribers: 0 },
+            },
+        ]);
+
+        //^ Return a 200 response with the courses
+        return res.status(200).json(courses);
+    }
+    //^ Catch any errors and return a 500 response
+    catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+}
+
 
 export {
     createCourse,
@@ -484,5 +531,7 @@ export {
     deleteCourse,
     registerCourse,
     getCoursesbyCategory,
-    getRelatedCoursesByCategory
+    getRelatedCoursesByCategory,
+    preSaleCourses,
+    getPopularCourses
 };

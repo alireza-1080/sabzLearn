@@ -6,7 +6,9 @@ import {
     updateCourse,
     deleteCourse,
     registerCourse,
-    getRelatedCoursesByCategory
+    getRelatedCoursesByCategory,
+    preSaleCourses,
+    getPopularCourses
 } from '../controllers/courses.js';
 import isTokenReceived from '../middlewares/isTokenReceived.js';
 import isTokenValid from '../middlewares/isTokenValid.js';
@@ -25,6 +27,14 @@ router
         createCourse
     )
     .get(getCourses);
+
+router
+    .route('/pre-sale')
+    .get(preSaleCourses);
+
+router
+    .route('/popular')
+    .get(getPopularCourses);
 
 router
     .route('/:id')
