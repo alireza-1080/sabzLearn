@@ -1,5 +1,5 @@
 import express from 'express';
-import { createCourse, getCourses, getCourse, updateCourse, deleteCourse, registerCourse } from '../controllers/courses.js';
+import { createCourse, getCourses, getCourse, updateCourse, deleteCourse, registerCourse, getRelatedCoursesByCategory } from '../controllers/courses.js';
 import isTokenReceived from '../middlewares/isTokenReceived.js';
 import isTokenValid from '../middlewares/isTokenValid.js';
 import isAdmin from '../middlewares/isAdmin.js';
@@ -44,5 +44,9 @@ router
         isTokenValid,
         registerCourse
     );
+
+router
+    .route('/:id/related')
+    .get(getRelatedCoursesByCategory);
 
 export default router;

@@ -22,6 +22,8 @@ const createCourse = async (req, res) => {
         let { title, description, duration, support, price, href, status, discount, category } = req.body;
         support = support.toLowerCase();
         status = status.toLowerCase();
+        price = +price;
+        discount = +discount;
 
         //^ Get instructor ID from the request object
         const instructor = req.userId;
@@ -421,4 +423,50 @@ const getCoursesbyCategory = async (req, res) => {
     }
 }
 
-export { createCourse, getCourses, getCourse, updateCourse, deleteCourse, registerCourse, getCoursesbyCategory };
+const getRelatedCoursesByCategory = async (req, res) => {
+    try {
+        //^ Get the course ID from the request parameters
+        const { id: courseId } = req.params;
+
+        //^ Validate the course ID
+        const { error: courseIdValidation } = idValidator.validate({ id: courseId });
+
+        //^ Return a 400 response if there is a validation error
+        if (courseIdValidation) {
+            throw new Error("Course ID must be a valid ObjectId");
+        }
+
+        //^ Find the course by ID
+        const course = await Course.findById(courseId);
+
+        //^ Return a 404 response if the course is not found
+        if (!course) {
+            throw new Error("Course not found");
+        }
+
+        //^ Get the category ID from the course object
+        const categoryId = course.category;
+
+        //^ Find the courses by category ID
+        const courses = await Course.find({ category: categoryId, _id: { $ne: courseId } }, { __v: 0, createdAt: 0, updatedAt: 0 })
+            .populate("instructor", { firstName: 1, lastName: 1 });
+
+        //^ Return a 200 response with the courses
+        return res.status(200).json(courses);
+    }
+    //^ Catch any errors and return a 500 response
+    catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+};
+
+export {
+    createCourse,
+    getCourses,
+    getCourse,
+    updateCourse,
+    deleteCourse,
+    registerCourse,
+    getCoursesbyCategory,
+    getRelatedCoursesByCategory
+};
