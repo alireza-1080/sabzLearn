@@ -3,6 +3,7 @@ import Course from "../models/course.js";
 import User from "../models/user.js";
 import commentValidator from "../validators/commentValidator.js";
 import idValidator from "../validators/idValidator.js";
+import { adminCommentValidator } from "../validators/commentValidator.js";
 
 const createComment = async (req, res) => {
     try {
@@ -190,4 +191,76 @@ const approveComment = async (req, res) => {
     }
 }
 
-export { createComment, getComments, getComment, deleteComment, approveComment };
+const createAdminReply = async (req, res) => {
+    try {
+        //^ Get the comment id from the request parameters
+        const { id: replyingCommentId } = req.params;
+
+        //^ Validate the comment id
+        const { error: replyingCommentIdValidationError } = idValidator.validate({ id: replyingCommentId });
+
+        //^ Return a 400 response if there is a validation error
+        if (replyingCommentIdValidationError) {
+            throw new Error("Comment ID must be a valid ObjectId");
+        }
+
+        //^ Find the comment by id
+        const replyingComment = await Comment.findById(replyingCommentId);
+
+        //^ Return a 404 response if the comment is not found
+        if (!replyingComment) {
+            throw new Error("Comment not found");
+        }
+
+        //^ Get the course id from the replying comment
+        const courseId = replyingComment.course.toString();
+
+        //^ Get the admin id from the request object
+        const adminId = req.userId;
+
+        //^ Get the reply body from the request body
+        const { body } = req.body;
+
+        //^ Create the admin reply test data
+        const adminReplySample = {
+            body,
+            course: courseId,
+            creator: adminId,
+            isItReply: true,
+            mainComment: replyingCommentId,
+        };
+
+        //^ Validate the admin reply data
+        const { error: adminReplyValidationError, value: validatedAdminReply } = adminCommentValidator.validate(adminReplySample);
+
+        //^ Return a 400 response if there is a validation error
+        if (adminReplyValidationError) {
+            throw new Error(adminReplyValidationError);
+        }
+
+        //^ Add isApproved to the admin reply
+        validatedAdminReply.isApproved = true;
+
+        //^ Create a new admin reply
+        const adminReply = new Comment(validatedAdminReply);
+
+        //^ Save the admin reply to the database
+        await adminReply.save();
+
+        //^ Return a 201 response if the admin reply is successfully created
+        return res.status(201).json({ message: "Admin reply created successfully" });
+    }
+    //^ Catch any errors and return a 500 response
+    catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+}
+
+export {
+    createComment,
+    getComments,
+    getComment,
+    deleteComment,
+    approveComment,
+    createAdminReply
+};

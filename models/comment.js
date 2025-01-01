@@ -21,8 +21,9 @@ const commentSchema = new mongoose.Schema({
     },
     rate: {
         type: Number,
-        required: true,
+        required: false,
         enum: [1, 2, 3, 4, 5],
+        default: 5,
     },
     isItReply: {
         type: Boolean,

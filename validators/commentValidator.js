@@ -50,4 +50,43 @@ const commentValidator = Joi.object({
 
 commentValidator.options({ abortEarly: false });
 
+const adminCommentValidator = Joi.object({
+    body: Joi
+        .string()
+        .required()
+        .trim()
+        .min(3),
+    course: Joi
+        .string()
+        .required()
+        .trim()
+        .pattern(new RegExp('^[0-9a-fA-F]{24}$'))
+        .messages({
+            'string.pattern.base': 'Course ID must be a valid ObjectId',
+        }),
+    creator: Joi
+        .string()
+        .required()
+        .trim()
+        .pattern(new RegExp('^[0-9a-fA-F]{24}$'))
+        .messages({
+            'string.pattern.base': 'Creator ID must be a valid ObjectId',
+        }),
+    isItReply: Joi
+        .boolean()
+        .required(),
+    mainComment: Joi
+        .string()
+        .trim()
+        .pattern(new RegExp('^[0-9a-fA-F]{24}$'))
+        .required()
+        .messages({
+            'string.pattern.base': 'Main Comment ID must be a valid ObjectId',
+        })
+}).strict();
+
+adminCommentValidator.options({ abortEarly: false });
+
+export { adminCommentValidator };
+
 export default commentValidator;
