@@ -28,16 +28,19 @@ router
         isTokenReceived,
         isTokenValid,
         isAdmin,
-        getContact)
+        getContact
+    )
     .delete(
         isTokenReceived,
         isTokenValid,
         isAdmin,
-        deleteContact)
+        deleteContact
+    )
     .put(
         isTokenReceived,
         isTokenValid,
         isAdmin,
-        replyToContact)
+        replyToContact
+    )
 
 export default router;
