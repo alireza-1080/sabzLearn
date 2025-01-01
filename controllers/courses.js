@@ -7,7 +7,7 @@ import CourseUser from "../models/courseUser.js";
 import courseUserValidator from "../validators/courseUser.js";
 import Category from "../models/category.js";
 import jwt from "jsonwebtoken";
-import courseUser from "../validators/courseUser.js";
+import Comments from "../models/comment.js";
 
 const createCourse = async (req, res) => {
     try {
@@ -73,7 +73,9 @@ const createCourse = async (req, res) => {
 const getCourses = async (req, res) => {
     try {
         //^ Get all courses from the database
-        const courses = await Course.find().populate("category").populate("instructor", { password: 0 });
+        const courses = await Course.find()
+            .populate("category")
+            .populate("instructor", { password: 0 })
 
         //^ Return a 200 response with the courses
         return res.status(200).json(courses);
@@ -100,13 +102,8 @@ const getCourse = async (req, res) => {
         //^ Find the course by ID
         const course = await Course.findById(id).select({ __v: 0, createdAt: 0, updatedAt: 0 })
             .populate("category", { __v: 0, createdAt: 0, updatedAt: 0 })
-            .populate("instructor", { password: 0, __v: 0, createdAt: 0, updatedAt: 0 })
+            .populate("instructor", { firstName: 1, lastName:1 })
             .populate('sessions', { __v: 0, createdAt: 0, updatedAt: 0 })
-            .populate({
-                path: 'comments',
-                match: { isApproved: true },
-                select: { __v: 0, createdAt: 0, updatedAt: 0 }
-            });
 
         //^ Return a 404 response if the course is not found
         if (!course) {
@@ -115,10 +112,29 @@ const getCourse = async (req, res) => {
 
         //^ Get the number of subscribers for the course
         const subscribersCount = await CourseUser.countDocuments({ course: id });
+
+        //^ Add the subscribers count to the course object
         course._doc.subscribersCount = subscribersCount;
 
+        //^ Get comments for the course
+        const comments = await Comments
+            .find(
+                { course: id, isApproved: true, isItReply: false },
+                 { __v: 0, createdAt: 0, updatedAt: 0, course: 0 }
+                )
+            .populate(
+                "creator",
+                 { password: 0, __v: 0, createdAt: 0, updatedAt: 0 }
+                )
+            .populate({ path: "replies", populate: { path: "creator", select: { password: 0, __v: 0, createdAt: 0, updatedAt: 0 } } });
+
+        console.log(comments);
+
+        //^ Replace the comments array in the course object with the comments
+        course._doc.comments = comments;
+
         //^ Get the average rating for the course
-        const courseComments = course.comments;
+        const courseComments = comments;
         let totalRating = 0;
         let totalComments = 0;
         courseComments.forEach(comment => {
