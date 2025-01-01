@@ -10,6 +10,7 @@ import categoryRouter from './routes/categories.js';
 import coursesRouter from './routes/courses.js';
 import sessionRouter from './routes/sessions.js';
 import commentRouter from './routes/comments.js';
+import contactUsRouter from './routes/contactUsRouter.js';
 
 //^ Fix for __dirname not being defined in ES6 modules
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -23,12 +24,21 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/courses/covers", express.static(path.join(__dirname, "courses", "covers")));
 
+//^ Error handling middleware for JSON parsing errors
+app.use((err, req, res, next) => {
+    if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+        return res.status(400).json({ error: "Invalid JSON" });
+    }
+    next();
+});
+
 app.use('/auth', authRouter);
 app.use('/users', userRouter);
 app.use('/categories', categoryRouter);
 app.use('/courses', coursesRouter);
 app.use('/sessions', sessionRouter);
 app.use('/comments', commentRouter);
+app.use('/contact-us', contactUsRouter);
 
 export default app;
 export { __dirname };
