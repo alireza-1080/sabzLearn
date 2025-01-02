@@ -3,11 +3,13 @@ import mongoose from "mongoose";
 const notificationSchema = new mongoose.Schema({
     adminId: {
         type: mongoose.Schema.Types.ObjectId,
-        required: true
+        required: true,
+        ref: "User"
     },
     instructorId: {
         type: mongoose.Schema.Types.ObjectId,
-        required: true
+        required: true,
+        ref: "User"
     },
     message: {
         type: String,

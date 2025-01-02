@@ -61,7 +61,9 @@ const getAdminNotifications = async (req, res) => {
         }
 
         //^ Find the notifications that match the admin ID
-        const notifications = await Notification.find({ adminId: admin });
+        const notifications = await Notification.find({ adminId: admin })
+        .populate('instructorId', {firstName: 1, lastName: 1})
+        .populate('adminId', {firstName: 1, lastName: 1});
 
         //^ Return a 200 response
         return res.status(200).json(notifications);
@@ -125,7 +127,10 @@ const markNotificationAsSeen = async (req, res) => {
 const getAllNotifications = async (req, res) => {
     try {
         //^ Get all notifications
-        const notifications = await Notification.find();
+        const notifications = await Notification.find()
+        .select({ updatedAt: 0, __v: 0 })
+        .populate('instructorId', {firstName: 1, lastName: 1})
+        .populate('adminId', {firstName: 1, lastName: 1});
 
         //^ Return a 200 response
         return res.status(200).json(notifications);
