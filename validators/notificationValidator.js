@@ -23,6 +23,11 @@ const notificationSchema = joi.object({
         .messages({
             'any.required': 'Message is required.'
         }),
-}).strict();
+})
+    .strict()
+    .unknown(false)
+    .messages({
+        'object.unknown': 'You have used an invalid key.'
+    });
 
 export default notificationSchema;

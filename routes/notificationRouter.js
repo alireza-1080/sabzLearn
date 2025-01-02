@@ -5,7 +5,9 @@ import isAdmin from '../middlewares/isAdmin.js';
 import {
     createNotification,
     getAdminNotifications,
-    markNotificationAsSeen
+    markNotificationAsSeen,
+    getAllNotifications,
+    deleteNotification
 } from '../controllers/notification.js';
 
 const router = express.Router();
@@ -18,6 +20,12 @@ router
         isAdmin,
         createNotification
     )
+    .get(
+        isTokenReceived,
+        isTokenValid,
+        isAdmin,
+        getAllNotifications
+    )
 
 router
     .route('/admin')
@@ -26,6 +34,15 @@ router
         isTokenValid,
         isAdmin,
         getAdminNotifications
+    )
+
+    router
+    .route('/:notificationId')
+    .delete(
+        isTokenReceived,
+        isTokenValid,
+        isAdmin,
+        deleteNotification
     )
 
 router
