@@ -4,7 +4,6 @@ const searchCourses = async (req, res) => {
     try {
         //^ Get the search keyword from the request parameters
         const { searchKeyWord } = req.params;
-        console.log(searchKeyWord);
 
         //^ Find the courses that match the search keyword
         const courses = await Course.find({

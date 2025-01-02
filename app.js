@@ -13,6 +13,7 @@ import commentRouter from './routes/comments.js';
 import contactUsRouter from './routes/contactUsRouter.js';
 import newsletterRouter from './routes/newsletterRouter.js';
 import searchRouter from './routes/searchRouter.js';
+import notificationRouter from './routes/notificationRouter.js';
 
 //^ Fix for __dirname not being defined in ES6 modules
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -43,6 +44,7 @@ app.use('/comments', commentRouter);
 app.use('/contact-us', contactUsRouter);
 app.use('/newsletter', newsletterRouter);
 app.use('/search', searchRouter);
+app.use(('/notification'), notificationRouter)
 
 export default app;
 export { __dirname };
