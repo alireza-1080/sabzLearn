@@ -3,7 +3,7 @@ import {
     createNewsletterSubscriber,
     deleteNewsletterSubscriber,
     getAllNewsletterSubscriber,
-} from '../controllers/newsletterController.js';
+} from '../controllers/newsletter.js';
 import isTokenReceived from '../middlewares/isTokenReceived.js';
 import isTokenValid from '../middlewares/isTokenValid.js';
 import isAdmin from '../middlewares/isAdmin.js';
