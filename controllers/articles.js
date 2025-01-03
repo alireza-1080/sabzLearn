@@ -150,7 +150,35 @@ const updateDraft = async (req, res) => {
     }
 };
 
-const deleteDraft = async (req, res) => { };
+const deleteDraft = async (req, res) => {
+    try {
+        //^ Get the draft ID from the request parameters
+        const { draftId } = req.params;
+
+        //^ Validate the draft ID
+        const { error: idValidationError } = idValidator.validate({ id: draftId });
+
+        //^ Return a 400 response if there is a validation error
+        if (idValidationError) {
+            throw new Error(idValidationError);
+        }
+
+        //^ Find the draft by ID and delete it
+        const draft = await Draft.findByIdAndDelete(draftId);
+
+        //^ Return a 404 response if the draft does not exist
+        if (!draft) {
+            throw new Error("Draft not found");
+        }
+
+        //^ Return a 200 response
+        return res.status(200).json("Draft deleted successfully");
+    }
+    catch (error) {
+        //^ Return a 400 response if there is an error
+        return res.status(400).json({ message: error.message });
+    }
+};
 
 export {
     getArticles,
