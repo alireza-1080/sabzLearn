@@ -18,7 +18,7 @@ const updateArticleCover = async (req, res) => { };
 
 const getArticleByHref = async (req, res) => { };
 
-const getDrafts = async (req, res) => {
+const getDrafts = async (_req, res) => {
     try {
         //^ Get all the drafts
         const drafts = await Draft.find()
@@ -67,7 +67,37 @@ const createDraft = async (req, res) => {
     }
 };
 
-const getDraftById = async (req, res) => { };
+const getDraftById = async (req, res) => {
+    try {
+        console.log(req.params);
+        //^ Get the draft ID from the request parameters
+        const { draftId } = req.params;
+
+        //^ Validate the draft ID
+        const { error: idValidationError } = idValidator.validate({ id: draftId });
+
+        //^ Return a 400 response if there is a validation error
+        if (idValidationError) {
+            throw new Error(idValidationError);
+        }
+
+        //^ Find the draft by ID
+        const draft = await Draft.findById(draftId)
+            .select({ updatedAt: 0, __v: 0 });
+
+            //^ Return a 404 response if the draft does not exist
+        if (!draft) {
+            throw new Error("Draft not found");
+        }
+
+        //^ Return a 200 response with the draft
+        return res.status(200).json(draft);
+    }
+    catch (error) {
+        //^ Return a 400 response if there is an error
+        return res.status(400).json({ message: error.message });
+    }
+};
 
 const updateDraft = async (req, res) => { };
 
