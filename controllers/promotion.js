@@ -30,7 +30,7 @@ const applyDiscountOnAllCourses = async (req, res) => {
     }
 }
 
-const removeDiscountFromAllCourses = async (req, res) => {
+const removeDiscountFromAllCourses = async (_req, res) => {
     try {
         //^ Find all the courses and remove the discount
         const courses = await Course.updateMany({}, { discount: 0 });
@@ -178,7 +178,7 @@ const getCoupon = async (req, res) => {
     }
 }
 
-const getAllCoupons = async (req, res) => { 
+const getAllCoupons = async (_req, res) => { 
     try {
         //^ Find all the coupons
         const coupons = await Coupon.find({})

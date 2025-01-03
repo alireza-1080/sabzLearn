@@ -15,6 +15,7 @@ import newsletterRouter from './routes/newsletterRouter.js';
 import searchRouter from './routes/searchRouter.js';
 import notificationRouter from './routes/notificationRouter.js';
 import promotionRouter from './routes/promotionRouter.js';
+import articlesRouter from './routes/articlesRouter.js';
 
 //^ Fix for __dirname not being defined in ES6 modules
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -45,8 +46,9 @@ app.use('/comments', commentRouter);
 app.use('/contact-us', contactUsRouter);
 app.use('/newsletter', newsletterRouter);
 app.use('/search', searchRouter);
-app.use(('/notification'), notificationRouter);
+app.use('/notification', notificationRouter);
 app.use('/promotion', promotionRouter);
+app.use('/articles', articlesRouter);
 
 export default app;
 export { __dirname };
